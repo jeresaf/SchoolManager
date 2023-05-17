@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>SchoolManager</title>
+        <meta name="description" content="SchoolManager">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+        <link rel="stylesheet" th:href="@{/css/font-awesome.min.css}">
+        <link rel="stylesheet" th:href="@{/css/shards.min.css}">
+        <link rel="stylesheet" th:href="@{/css/jquery.dataTables.min.css}">
+        <link rel="stylesheet" th:href="@{/css/styles.css}">
+    </head>
+    <body>
+        <div class="loader"><div class="page-loader"></div></div>
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <img src="images/pencil.png" alt="Logo" class="mr-2" height="30px">
+            <a class="navbar-brand" href="#">SchoolManager</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+                    aria-controls="navbarNavDropdown-7"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/students">Students
+                            <span class="sr-only">(current)</span>
+                        </a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/teachers">Teachers</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="page-content">
+            <!-- Content -->
+            <div class="content clearfix">
+        
+                <!-- Students -->
+                <div id="students_table" class="container mb-5">
+                    <div class="section-title col-lg-8 col-md-10 ml-auto mr-auto">
+                        <h3 class="mb-4 mr-3">Students <span class="badge mr-3 badge-primary" data-toggle="modal" data-target="#studentsModal" style="cursor: pointer;">Add Student</span></h3>
+                    </div>
+        
+                    <div class="students col-md-10 ml-auto mr-auto">
+                        <div id="students_wrapper" class="dataTables_wrapper">
+                            <table id="students" class="display dataTable table-striped table-bordered" style="width:100%" aria-describedby="students_info">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Surname</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="odd">
+                                        <td valign="top" colspan="6" class="dataTables_empty">Loading...</td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Surname</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="modal fade" id="studentsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">New Student</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="student_form">
+                                    <div class="row">
+                                        <div class="form-group col-md-12">
+                                            <label for="name" class="col-form-label">Name</label>
+                                            <input type="text" required class="form-control" id="name" placeholder="Name">
+                                        </div>
+                                        <div class="form-group col-md-12">
+                                            <label for="surname" class="col-form-label">Surame</label>
+                                            <input type="text" required class="form-control" id="surname" placeholder="Surname">
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" onclick="submit_student()"  class="btn btn-success btn-pill" data-dismiss="modal">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal Body -->
+                <div class="modal fade" id="editStudentsModal" tabindex="-1" role="dialog" aria-labelledby="editStudentModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editModalLabel">New Student</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="edit_student_form">
+                                    <div class="row">
+                                        <div class="form-group col-md-12">
+                                            <input hidden id="edit_student_id">
+                                            <label for="edit_student_name" class="col-form-label">Name</label>
+                                            <input type="text" required class="form-control" id="edit_student_name" placeholder="Name">
+                                        </div>
+                                        <div class="form-group col-md-12">
+                                            <label for="edit_student_surname" class="col-form-label">Surame</label>
+                                            <input type="text" required class="form-control" id="edit_student_surname" placeholder="Surname">
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" onclick="update_student()"  class="btn btn-success btn-pill" data-dismiss="modal">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal Body -->
+                <div class="modal fade" id="deleteStudentsModal" tabindex="-1" role="dialog" aria-labelledby="deleteStudentModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteStudentModalLabel">Delete Student</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <input hidden id="delete_student_id">
+                                Are you sure you want to <strong>delete</strong> this student?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger btn-pill" data-dismiss="modal">No</button>
+                                <button type="button" onclick="delete_student()"  class="btn btn-success btn-pill" data-dismiss="modal">Yes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <footer class="main-footer py-5">
+                <p class="text-muted text-center small p-0 mb-4">&copy; AYIKO JEREMIAH SARA</p>
+            </footer>
+        </div>
+
+        <!-- JavaScript -->
+        <script src="js/buttons.js"></script>
+        <script src="js/jquery-3.5.1.js"></script>
+        <script src="js/popper.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/shards.min.js"></script>
+        <script src="js/jquery.dataTables.min.js"></script>
+        <script src="js/app.min.js"></script>
+
+        <script>
+            let table;
+            document.addEventListener('DOMContentLoaded', function () {
+                table = new DataTable('#students', {
+                    ajax: {
+                        url: '/api/v1/students',
+                        dataSrc: '',
+                    },
+                    columns: [
+                        { data: 'name' },
+                        { data: 'surname' },
+                        {
+                            data: 'id',
+                            render: function (data, type, row, meta) {
+                                return '<button data-toggle="modal" data-target="#editStudentsModal" onclick="edit_student(' + row.id + ',\'' + row.name + '\')" class="btn btn-primary btn-pill mr-3"><i class="fa fa-pencil"></i> Edit</button><button data-toggle="modal" data-target="#deleteStudentsModal"  onclick="open_delete_student(' + row.id + ')" class="btn btn-primary btn-pill"><i class="fa fa-trash"></i> Delete</button>'
+                            },
+                            orderable: false
+                        }
+                    ]
+                } );
+            } );
+            function submit_student() {
+                var formData = {
+                    name: $("#name").val(),
+                    surname: $("#surname").val(),
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "/api/v1/students",
+                    data: JSON.stringify(formData),
+                    dataType: "json",
+                    contentType: 'application/json'
+                }).done(function (data) {
+                    console.log(data);
+                    table.ajax.reload();
+                });
+            }
+            function update_student() {
+                let id = $("#edit_student_id").val();
+                var formData = {
+                    name: $("#edit_student_name").val(),
+                    surname: $("#edit_student_surname").val(),
+                };
+
+                $.ajax({
+                    type: "PUT",
+                    url: "/api/v1/students/" + id,
+                    data: JSON.stringify(formData),
+                    dataType: "json",
+                    contentType: 'application/json'
+                }).done(function (data) {
+                    console.log(data);
+                    table.ajax.reload();
+                    $("#edit_student_id").val('');
+                    $("#edit_student_name").val('');
+                    $("#edit_student_surname").val('');
+                });
+            }
+            function edit_student(id, name, surname) {
+                $("#edit_student_id").val(id);
+                $("#edit_student_name").val(name);
+                $("#edit_student_surname").val(surname);
+            }
+
+            function open_delete_student(id) {
+                $("#delete_student_id").val(id);
+            }
+
+            function delete_student() {
+                let id = $("#delete_student_id").val();
+                $.ajax({
+                    type: "DELETE",
+                    url: "/api/v1/students/" + id
+                }).done(function (data) {
+                    console.log(data);
+                    table.ajax.reload();
+                    $("#delete_student_id").val('');
+                });
+            }
+
+            function delete_students() {
+                let id = $("#delete_student_id").val();
+                $.ajax({
+                    type: "DELETE",
+                    url: "/api/v1/students"
+                }).done(function (data) {
+                    console.log(data);
+                    table.ajax.reload();
+                });
+            }
+        </script>
+        
+    </body>
+</html>

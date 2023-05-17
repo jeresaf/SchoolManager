@@ -20,6 +20,8 @@ public class PreloadDatabase {
     CommandLineRunner initDatabase(StudentRepository studentRepository, TeacherRepository teacherRepository) {
   
       return args -> {
+        studentRepository.deleteAll();
+        teacherRepository.deleteAll();
         log.info("Preloading " + studentRepository.save(new Student("Naruto", "Uzumaki")));
         log.info("Preloading " + studentRepository.save(new Student("Sasuke", "Uchiha")));
         log.info("Preloading " + studentRepository.save(new Student("Sakura", "Haruno")));
