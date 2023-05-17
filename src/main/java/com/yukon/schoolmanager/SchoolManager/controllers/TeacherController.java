@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.yukon.schoolmanager.SchoolManager.entities.Student;
 import com.yukon.schoolmanager.SchoolManager.entities.Teacher;
 import com.yukon.schoolmanager.SchoolManager.exceptions.ResourceNotFoundException;
+import com.yukon.schoolmanager.SchoolManager.repositories.StudentRepository;
 import com.yukon.schoolmanager.SchoolManager.repositories.TeacherRepository;
 
 @RestController
@@ -23,9 +25,11 @@ import com.yukon.schoolmanager.SchoolManager.repositories.TeacherRepository;
 public class TeacherController {
 
     private final TeacherRepository teacherRepository;
+    private final StudentRepository studentRepository;
 
-    TeacherController(TeacherRepository teacherRepository) {
+    TeacherController(TeacherRepository teacherRepository, StudentRepository studentRepository) {
         this.teacherRepository = teacherRepository;
+        this.studentRepository = studentRepository;
     }
 
     // Aggregate root
@@ -69,6 +73,45 @@ public class TeacherController {
 
         return new ResponseEntity<>(teacherRepository.save(_teacher), HttpStatus.OK);
         
+    }
+
+    @PutMapping("/teachers/{id}/student/{sid}")
+    ResponseEntity<Teacher> updateteacher(@RequestBody Teacher teacher, @PathVariable Long id, @PathVariable Long sid) {
+
+        Teacher _teacher = teacherRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Failed to find teacher with id = " + id));
+
+        Student _student = studentRepository.findById(sid) 
+        .orElseThrow(() -> new ResourceNotFoundException("Failed to find student with id = " + id));
+
+        _teacher.addStudent(_student);
+
+        return new ResponseEntity<>(teacherRepository.save(_teacher), HttpStatus.OK);
+        
+    }
+
+    @GetMapping("/teachers/{id}/students")
+    ResponseEntity<List<Student>> getTeacherStudents(@PathVariable Long id) {
+        
+        Teacher teacher = teacherRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Failed to find teacher with id = " + id));
+
+        return new ResponseEntity<>(teacher.getTeacherStudents(), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/teachers/{id}/students/{sid}")
+    ResponseEntity<HttpStatus> deleteTeacher(@PathVariable Long id, @PathVariable Long sid) {
+        Teacher _teacher = teacherRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Failed to find teacher with id = " + id));
+
+        studentRepository.findById(sid) 
+        .orElseThrow(() -> new ResourceNotFoundException("Failed to find student with id = " + sid));
+
+        _teacher.removeStudent(sid);
+
+        teacherRepository.save(_teacher);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/teachers/{id}")

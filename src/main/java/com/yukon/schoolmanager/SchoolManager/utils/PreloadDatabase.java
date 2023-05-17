@@ -22,10 +22,16 @@ public class PreloadDatabase {
       return args -> {
         studentRepository.deleteAll();
         teacherRepository.deleteAll();
-        log.info("Preloading " + studentRepository.save(new Student("Naruto", "Uzumaki")));
-        log.info("Preloading " + studentRepository.save(new Student("Sasuke", "Uchiha")));
-        log.info("Preloading " + studentRepository.save(new Student("Sakura", "Haruno")));
-        log.info("Preloading " + studentRepository.save(new Student("Hinata", "Hyuga")));
+        Student s1 = studentRepository.save(new Student("Naruto", "Uzumaki"));
+        Student s2 = studentRepository.save(new Student("Sasuke", "Uchiha"));
+        Student s3 = studentRepository.save(new Student("Sakura", "Haruno"));
+        Student s4 = studentRepository.save(new Student("Hinata", "Hyuga"));
+        Teacher t1 = new Teacher("Madara Uchiha");
+        Teacher t2 = new Teacher("Griffith");
+        log.info("Preloading " + s1);
+        log.info("Preloading " + s2);
+        log.info("Preloading " + s3);
+        log.info("Preloading " + s4);
         log.info("Preloading " + studentRepository.save(new Student("Rock", "Lee")));
         log.info("Preloading " + studentRepository.save(new Student("Shikamaru", "Nara")));
         log.info("Preloading " + studentRepository.save(new Student("Kakashi", "Hatake")));
@@ -38,8 +44,14 @@ public class PreloadDatabase {
         log.info("Preloading " + studentRepository.save(new Student("Casca", "Yukinari")));
         log.info("Preloading " + studentRepository.save(new Student("Farnese", "Hikasa")));
         log.info("Preloading " + studentRepository.save(new Student("Shierke", "Lee")));
-        log.info("Preloading " + teacherRepository.save(new Teacher("Madara Uchiha")));
-        log.info("Preloading " + teacherRepository.save(new Teacher("Griffith")));
+        log.info("Preloading " + teacherRepository.save(t1));
+        log.info("Preloading " + teacherRepository.save(t2));
+        t1.addStudent(s1);
+        t1.addStudent(s2);
+        t2.addStudent(s3);
+        t2.addStudent(s4);
+        teacherRepository.save(t1);
+        teacherRepository.save(t2);
       };
     }
 

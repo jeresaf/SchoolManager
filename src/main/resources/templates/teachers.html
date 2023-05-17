@@ -149,6 +149,44 @@
                         </div>
                     </div>
                 </div>
+                <!-- Modal Body -->
+                <div class="modal fade" id="removeTeacherStudentsModal" tabindex="-1" role="dialog" aria-labelledby="removeTeacherStudentsModalLabel" aria-hidden="true" style="z-index: 20000;">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="removeTeacherStudentsModalLabel">Remove Student</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <input hidden id="remove_teacher_id">
+                                <input hidden id="remove_teacher_sid">
+                                Are you sure you want to <strong>delete</strong> this student from the teacher?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger btn-pill" data-dismiss="modal">No</button>
+                                <button type="button" onclick="remove_teacher_student()"  class="btn btn-success btn-pill" data-dismiss="modal">Yes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal Body -->
+                <div class="modal fade" id="viewStudentsModal" tabindex="-1" role="dialog" aria-labelledby="viewStudentsModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="viewStudentsModalLabel">View Students</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div id="student_table_model" class="modal-body">
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         
             <footer class="main-footer py-5">
@@ -167,6 +205,7 @@
 
         <script>
             let table;
+            let student_table;
             document.addEventListener('DOMContentLoaded', function () {
                 table = new DataTable('#teachers', {
                     ajax: {
@@ -178,12 +217,13 @@
                         {
                             data: 'id',
                             render: function (data, type, row, meta) {
-                                return '<button data-toggle="modal" data-target="#editTeachersModal" onclick="edit_teacher(' + row.id + ',\'' + row.name + '\')" class="btn btn-primary btn-pill mr-3"><i class="fa fa-pencil"></i> Edit</button><button data-toggle="modal" data-target="#deleteTeachersModal"  onclick="open_delete_teacher(' + row.id + ')" class="btn btn-primary btn-pill"><i class="fa fa-trash"></i> Delete</button>'
+                                return '<button data-toggle="modal" data-target="#editTeachersModal" onclick="edit_teacher(' + row.id + ',\'' + row.name + '\')" class="btn btn-primary btn-pill mr-3"><i class="fa fa-pencil"></i> Edit</button><button data-toggle="modal" data-target="#deleteTeachersModal"  onclick="open_delete_teacher(' + row.id + ')" class="btn btn-primary btn-pill mr-3"><i class="fa fa-trash"></i> Delete</button><button data-toggle="modal" data-target="#viewStudentsModal"  onclick="view_students(' + row.id + ')" class="btn btn-primary btn-pill"><i class="fa fa-eye"></i> View Students</button>'
                             },
                             orderable: false
                         }
                     ]
                 } );
+                
             } );
             function submit_teacher() {
                 var formData = {
@@ -229,6 +269,25 @@
                 $("#delete_teacher_id").val(id);
             }
 
+            function open_remove_teacher_student(id, sid) {
+                $("#remove_teacher_id").val(id);
+                $("#remove_teacher_sid").val(id);
+                $('#viewStudentsModal').modal('toggle');
+            }
+
+            function remove_teacher_student() {
+                let id = $("#remove_teacher_id").val();
+                let sid = $("#remove_teacher_sid").val();
+                $.ajax({
+                    type: "DELETE",
+                    url: "/api/v1/teachers/" + id + "/students/" + sid
+                }).done(function (data) {
+                    console.log(data);
+                    table.ajax.reload();
+                    $("#delete_teacher_id").val('');
+                });
+            }
+
             function delete_teacher() {
                 let id = $("#delete_teacher_id").val();
                 $.ajax({
@@ -250,6 +309,30 @@
                     console.log(data);
                     table.ajax.reload();
                 });
+            }
+
+            function view_students(id) {
+                stmhtml = '<div class="teacher_students col-md-10 ml-auto mr-auto"><div id="teacher_students_wrapper" class="dataTables_wrapper"><table id="teacher_students' + id + '" class="display dataTable table-striped table-bordered" style="width:100%" aria-describedby="teacher_students_info"><thead><tr><th>Name</th><th>Surame</th><th>Actions</th></tr></thead><tbody><tr class="odd"><td valign="top" colspan="6" class="dataTables_empty">Loading...</td></tr></tbody><tfoot><tr><th>Name</th><th>Surame</th><th>Actions</th></tr></tfoot></table></div></div>'
+                $('#student_table_model').html(stmhtml)
+
+                student_table = new DataTable('#teacher_students'+id, {
+
+                    ajax: {
+                        url: '/api/v1/teachers/'+id+'/students',
+                        dataSrc: '',
+                    },
+                    columns: [
+                        { data: 'name' },
+                        { data: 'surname' },
+                        {
+                            data: 'id',
+                            render: function (data, type, row, meta) {
+                                return '<button data-toggle="modal" data-target="#removeTeacherStudentsModal"  onclick="open_remove_teacher_student(' + id + ',' + row.id + ')" class="btn btn-primary btn-pill mr-3"><i class="fa fa-trash"></i> Remove</button>'
+                            },
+                            orderable: false
+                        }
+                    ]
+                } );
             }
         </script>
         

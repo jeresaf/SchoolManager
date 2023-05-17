@@ -1,7 +1,9 @@
 package com.yukon.schoolmanager.SchoolManager.entities;
 
 import java.util.Objects;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.*;
@@ -59,6 +61,10 @@ public class Teacher {
         this.students.remove(student);
         //student.geTeachers().remove(this);
       }
+    }
+
+    public List<Student> getTeacherStudents(){
+        return new ArrayList<Student> (students);
     }
 
     @Override
